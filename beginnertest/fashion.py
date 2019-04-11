@@ -31,3 +31,17 @@ model = keras.Sequential([
     keras.layers.Dense(128, activation = 'relu'),
     keras.layers.Dense(10, activation = 'softmax')
 ])
+
+model.compile(optimizer='adam',
+            loss='sparse_categorical_crossentropy',
+            metrics=['accuracy'])
+
+# Training model accuracy = 0.8912
+model.fit(train_images, train_labels, epochs=5)
+
+# Evaluate accuracy
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+
+# Testing accuracy = 0.8744
+# Represents overfitting when model (When model performs worse on new, unseen data)
+print('\nTest accuracy: ', test_acc)
