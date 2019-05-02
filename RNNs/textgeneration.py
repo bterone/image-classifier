@@ -48,7 +48,65 @@ def split_input_target(chunk):
 
 dataset = sequences.map(split_input_target)
 
-for input_example, target_example in dataset.take(1):
-    print('Input data: ', repr(''.join(idx2char[input_example.numpy()])))
-    print('Target data: ', repr(''.join(idx2char[target_example.numpy()])))
+#for input_example, target_example in dataset.take(1):
+#    print('Input data: ', repr(''.join(idx2char[input_example.numpy()])))
+#    print('Target data: ', repr(''.join(idx2char[target_example.numpy()])))
 
+#for i, (input_idx, target_idx) in enumerate(zip(input_example[:5], target_example[:5])):
+#    print("Step {:4d}".format(i))
+#    print("  input: {} ({:s})".format(input_idx, repr(idx2char[input_idx])))
+#    print("  expected output: {} ({:s})".format(target_idx, repr(idx2char[target_idx])))
+
+# CREATING TRAINING BATCHES
+# Batch size
+BATCH_SIZE = 64
+
+# Buffer size to shuffle the dataset
+# (TF data is designed to work with possibly infinite sequences,
+# so it doesn't attempt to shuffle the entire sequence in memory. Instead,
+# it maintains a buffer in which it shuffles elements).
+BUFFER_SIZE = 10000
+
+dataset = dataset.shuffle(BUFFER_SIZE).batch(BATCH_SIZE, drop_remainder=True)
+
+# BUILDING THE MODEL
+# Lenght of the vocabulary in chars
+vocab_size = len(vocab)
+
+# The embedding dimension
+embedding_dim = 256
+
+# Number of RNN units
+rnn_units = 1024
+
+def build_model(vocab_size, embedding_dim, rnn_units, batch_size):
+    model = tf.keras.Sequential([
+        tf.keras.layers.Embedding(vocab_size, embedding_dim,
+                                  batch_input_shape=[batch_size, None]),
+        tf.keras.layers.LSTM(rnn_units,
+                             return_sequences=True,
+                             stateful=True,
+                             recurrent_initializer='glorot_uniform'),
+        tf.keras.layers.Dense(vocab_size)
+    ])
+    return model
+
+model = build_model(
+    vocab_size = len(vocab),
+    embedding_dim = embedding_dim,
+    rnn_units = rnn_units,
+    batch_size = BATCH_SIZE
+)
+
+for input_example_batch, target_example_batch in dataset.take(1):
+    example_batch_predictions = model(input_example_batch)
+    print(example_batch_predictions.shape, "# (batch_size, sequence_length, vocab_size")
+
+#model.summary()
+
+sampled_indices = tf.random.categorical(example_batch_predictions[0], num_samples=1)
+sampled_indices = tf.squeeze(sampled_indices, axis=-1).numpy()
+
+print("Input: \n", repr("".join(idx2char[input_example_batch[0]])))
+print()
+print("Next Char Predictions: \n", repr("".join(idx2char[sampled_indices])))
