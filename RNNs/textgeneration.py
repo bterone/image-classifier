@@ -107,6 +107,22 @@ for input_example_batch, target_example_batch in dataset.take(1):
 sampled_indices = tf.random.categorical(example_batch_predictions[0], num_samples=1)
 sampled_indices = tf.squeeze(sampled_indices, axis=-1).numpy()
 
-print("Input: \n", repr("".join(idx2char[input_example_batch[0]])))
-print()
-print("Next Char Predictions: \n", repr("".join(idx2char[sampled_indices])))
+#print("Input: \n", repr("".join(idx2char[input_example_batch[0]])))
+#print()
+#print("Next Char Predictions: \n", repr("".join(idx2char[sampled_indices])))
+
+# TRAINING THE MODEL
+# Attaching an optimizer and a loss function
+
+def loss(labels, logits):
+    return tf.keras.losses.sparse_categorical_crossentropy(labels, logits, from_logits=True)
+
+example_batch_loss = loss(target_example_batch, example_batch_predictions)
+print("Prediction shape: ", example_batch_predictions.shape, " # (batch_size, sequence_length, vocab size)")
+print("scalar_loss:      ", example_batch_loss.numpy().mean())
+
+model.compile(optimizier='adam', loss=loss)
+
+
+# Configuring checkpoints
+
