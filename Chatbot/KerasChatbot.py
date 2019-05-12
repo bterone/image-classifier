@@ -208,3 +208,60 @@ print("# of questions:", len(short_questions))
 print("# of answers:", len(short_answers))
 print("% of data used: {}%".format(round(len(short_questions)/len(questions),4)*100))
 
+# In[19]:
+
+# Create a dictionary for the frequency of the vocabulary
+vocab = {}
+for question in short_questions:
+    for word in question.split():
+        if word not in vocab:
+            vocab[word] = 1
+        else:
+            vocab[word] += 1
+            
+for answer in short_answers:
+    for word in answer.split():
+        if word not in vocab:
+            vocab[word] = 1
+        else:
+            vocab[word] += 1
+
+
+# In[20]:
+
+# Remove rare words from the vocabulary.
+# We will aim to replace fewer than 5% of words with <UNK>
+# You will see this ratio soon.
+threshold = 10
+count = 0
+for k,v in vocab.items():
+    if v >= threshold:
+        count += 1
+
+
+# In[21]:
+
+print("Size of total vocab:", len(vocab))
+print("Size of vocab we will use:", count)
+
+# In[22]:
+
+# In case we want to use a different vocabulary sizes for the source and target text, 
+# we can set different threshold values.
+# Nonetheless, we will create dictionaries to provide a unique integer for each word.
+questions_vocab_to_int = {}
+
+word_num = 0
+for word, count in vocab.items():
+    if count >= threshold:
+        questions_vocab_to_int[word] = word_num
+        word_num += 1
+        
+answers_vocab_to_int = {}
+
+word_num = 0
+for word, count in vocab.items():
+    if count >= threshold:
+        answers_vocab_to_int[word] = word_num
+        word_num += 1
+
