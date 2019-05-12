@@ -265,3 +265,31 @@ for word, count in vocab.items():
         answers_vocab_to_int[word] = word_num
         word_num += 1
 
+# In[23]:
+
+# Add the unique tokens to the vocabulary dictionaries.
+codes = ['<PAD>','<EOS>','<UNK>','<GO>']
+
+for code in codes:
+    questions_vocab_to_int[code] = len(questions_vocab_to_int)+1
+    
+for code in codes:
+    answers_vocab_to_int[code] = len(answers_vocab_to_int)+1
+
+
+# In[24]:
+
+# Create dictionaries to map the unique integers to their respective words.
+# i.e. an inverse dictionary for vocab_to_int.
+questions_int_to_vocab = {v_i: v for v, v_i in questions_vocab_to_int.items()}
+answers_int_to_vocab = {v_i: v for v, v_i in answers_vocab_to_int.items()}
+
+
+# In[25]:
+
+# Check the length of the dictionaries.
+print(len(questions_vocab_to_int))
+print(len(questions_int_to_vocab))
+print(len(answers_vocab_to_int))
+print(len(answers_int_to_vocab))
+
