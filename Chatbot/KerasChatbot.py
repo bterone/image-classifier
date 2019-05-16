@@ -293,3 +293,33 @@ print(len(questions_int_to_vocab))
 print(len(answers_vocab_to_int))
 print(len(answers_int_to_vocab))
 
+# In[26]:
+
+# Add the end of sentence token to the end of every answer.
+for i in range(len(short_answers)):
+    short_answers[i] += ' <EOS>'
+
+
+# In[27]:
+
+# Convert the text to integers. 
+# Replace any words that are not in the respective vocabulary with <UNK> 
+questions_int = []
+for question in short_questions:
+    ints = []
+    for word in question.split():
+        if word not in questions_vocab_to_int:
+            ints.append(questions_vocab_to_int['<UNK>'])
+        else:
+            ints.append(questions_vocab_to_int[word])
+    questions_int.append(ints)
+    
+answers_int = []
+for answer in short_answers:
+    ints = []
+    for word in answer.split():
+        if word not in answers_vocab_to_int:
+            ints.append(answers_vocab_to_int['<UNK>'])
+        else:
+            ints.append(answers_vocab_to_int[word])
+    answers_int.append(ints)
